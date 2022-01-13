@@ -1,0 +1,159 @@
+#include<conio.h>
+#include<iostream>
+#include<ctype.h>
+#include<string>
+#include<Windows.h>
+using namespace std;
+bool prcd(char char1,char char2)
+{
+	if(char2=='(')					{		return false;					}
+	if(char1=='(')					{		return false;					}
+	if(char2==')')					{		return true;					}
+	if(char1=='^')					{		return true;					}//changed!!
+	if (char1=='+'||char1=='-')		{		if (char2!='+'&&char2!='-') return false;		else return true;		}
+	if(char1=='*'||char1=='/')		{		if(char2!='^')				return true;		else return false;		}	
+}//**********************************************************************************************
+class stack
+{
+private :
+	int top;
+	long float items[10000];
+public:
+	stack(){top = -1;}
+
+	bool empty()
+	{	if(top==-1) return true;	return false;	}
+	//////////////////////////////
+	bool push(float x)
+	{
+		if (top==100-1)			{return false;}
+		if(items[++top]=x)		return true;
+	}
+	//////////////////////////////
+	float pop()
+	{	return items [top--] ;	}
+	/////////////////////////
+	float stacktop()
+	{	return items[top];	}
+};
+float evaluate(float secend , float first ,float symbol)
+{
+	if(symbol=='+') return first+secend;
+	if(symbol=='-') return first-secend;
+	if(symbol=='*') return first*secend;
+	if(symbol=='/') return first/secend;
+	if(symbol=='^') 	{	float r;float x=1;	for(r=0;r<secend;r++){	x=x*first;}	return x;}
+}
+int main()
+{ 
+	while (true)
+	{
+		system("color f0");
+		int checkpoint;
+		cout<<" type (1) to see all part of program 	&	type (2) to see final resualt  "<<endl;
+		cin>>checkpoint;
+		system("cls");
+		if(checkpoint==1){	system("color 80");		Beep(523, 500);}
+		if(checkpoint==2){	system("color 70");		Beep(523, 300);	Beep(700, 300);}
+		char infix[1000]="0",postfix[1000]="0";
+		stack stack1;
+		cout<<"type  infix "<<endl;
+		cin>>infix;
+		if(checkpoint==1){cout<<endl<<infix<<endl;} 
+		int i=0,j=0;
+
+		while ( infix [i] != '\0' )
+		{
+			if ( isalpha ( infix[i] ) )		{ postfix [j++] = infix[i] ;if(checkpoint==1){cout<<"postfix ="<<postfix<<endl;} }
+
+			else
+			{
+				while( ! stack1.empty() && prcd ( stack1.stacktop() , infix[i] ))
+				{
+					if(checkpoint==1){cout<<"stack1.stacktop() = "<<(char)stack1.stacktop()<<endl; }
+					postfix [j++] = stack1.pop();
+					if(checkpoint==1){	cout<<"postfix ="<<postfix<<endl; }
+				}
+				stack1.push( infix [i] ) ;
+				if(checkpoint==1){	cout<<"stack1.stacktop() = "<<(char)stack1.stacktop()<<endl; }
+			}
+			i++;
+		}
+
+		while(! stack1.empty())
+		{
+			if(checkpoint==1){cout<<"stack1.stacktop() = "<<(char)stack1.stacktop()<<endl;}
+			postfix[j++]=stack1.pop();	
+		}
+
+		if(checkpoint==1){	cout<<postfix; }
+
+		char newpostfix[1000]="0";
+		int i1=0,i2=0;
+		while (postfix[i1]!='\0')
+		{
+			if(postfix[i1]!='('&&postfix[i1]!=')')	{	newpostfix[i2]=postfix[i1];	i2++;	}
+			i1++;
+		}
+		if(checkpoint==1){ cout<<endl<<newpostfix; }
+		//part one complete
+		cout<<endl<<endl<<"type numbers of infix"<<endl;
+		int numberCounter =0;
+		int numbers[1000];
+		i=0;
+		for(i=0;newpostfix[i]!='\0';i++)
+		{
+			if (newpostfix[i]!='+' && newpostfix[i]!='-' && newpostfix[i]!='*' && newpostfix[i]!='/' && newpostfix[i]!='(' && newpostfix[i]!=')'&&newpostfix[i]!='^')
+			{numberCounter++;}
+		}
+		int ii=0;
+		while(ii<numberCounter)
+		{	
+			for(i=0;newpostfix[i]!='\0';i++) 
+				if(isalpha(newpostfix[i]))
+				{
+					cout<< newpostfix[i]<<" = ";
+					cin>>numbers[ii];	ii++;
+				}
+		}
+		//-------------------------------------- 
+		i=0; 
+		cout<<endl;
+		//-------------------------------------- 
+		int a =0;
+		int b =0;
+		while(newpostfix[a]!='\0')
+		{	
+			if ( isalpha ( newpostfix[a] ) )	{  newpostfix [a] = numbers [b] +48 ;  b++;	}
+			a++;
+		}
+
+		if(checkpoint==1){ cout<<newpostfix; }
+		//secend part complete
+		int newi=0;
+		stack stack2;
+		float result, first ,secend;
+		while(newpostfix[newi]!='\0')
+		{
+			if (newpostfix[newi]!='+' && newpostfix[newi]!='-' && newpostfix[newi]!='*' && newpostfix[newi]!='/' && newpostfix[newi]!='(' && newpostfix[newi]!=')' &&newpostfix[newi]!='^')
+			{	stack2.push ((int)newpostfix [ newi ]-48)	;	}
+
+			else
+			{
+				first=stack2.pop() ;	
+				secend=stack2.pop();
+				result=evaluate(first,secend,newpostfix[newi]);
+				stack2.push(result);
+			}
+			newi++;
+		}
+		cout<<endl<<"the answer is ; --------->" <<'('<<stack2.pop()<<')'<<endl; 	
+		//3rd part complete 
+		int breakpoint;
+		cout<<endl<<"if want to try agin enter (1)		&	 if want to end enter (0) "<<endl;
+		cin>>breakpoint;
+		if(breakpoint==0){break;}
+		if(breakpoint==1){ system("cls");   system("color a0");		Beep(600, 600);}
+	}
+	return 0;
+}
